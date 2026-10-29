@@ -44,15 +44,15 @@ VITE_OBSERVABILITY_SCRIPT_URL=https://seu-endpoint/script/...
 
 ### Demo de erros
 
-Na interface há botões para disparar:
+Na interface há um botão fixo (canto inferior direito) que dispara um erro síncrono diferente em cada página:
 
-- erro síncrono (`throw`)
-- promise rejeitada (`TypeError`)
+- **home** — `Error` ao carregar destaques
+- **PLP (`/feminino`)** — `TypeError` no filtro de catálogo
+- **PDP (`/:slug/p`)** — `ReferenceError` de SKU indisponível (inclui o slug do produto)
 
 Também é possível acionar via query string (após ~1,5s):
 
 - `?cry_simulate_error`
-- `?cry_simulate_rejection`
 
 Exemplo: `http://localhost:5173/feminino?cry_simulate_error`
 
