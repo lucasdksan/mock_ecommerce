@@ -1,5 +1,5 @@
 const DEFAULT_OBSERVABILITY_SCRIPT_URL =
-  'https://console.crystalflow.online/api/observability/script/wqi2IEirJxC0vbzrLsF2-cDKOIKTsKIE'
+  'https://console.crystalflow.online/api/observability/script/tKiXR2DcAxZlU95WgsGQHSU61Tnpoafq'
 
 export function injectObservabilityScript(): void {
   const url =
