@@ -1,57 +1,26 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
-
-function pageLabel(pathname: string): string {
-  if (/\/p\/?$/.test(pathname) || pathname.includes('/p/')) {
-    return 'PDP'
-  }
-  if (pathname.includes('feminino')) {
-    return 'PLP (feminino)'
-  }
-  return 'home'
-}
-
-function fireDemoError(label: string): void {
-  throw new Error(`[mock_ecommerce] Erro simulado — ${label}`)
-}
-
-function fireDemoRejection(label: string): void {
-  void Promise.reject(
-    new TypeError(
-      `[mock_ecommerce] Promise rejeitada — carrinho indisponível — ${label}`,
-    ),
-  )
-}
+import { getDemoErrorSpec } from '../lib/demo-errors.ts'
 
 export function DemoErrorTools() {
   const { pathname, search } = useLocation()
+  const spec = getDemoErrorSpec(pathname)
 
   useEffect(() => {
     const params = new URLSearchParams(search)
-    const label = pageLabel(pathname)
-    const timers: number[] = []
+    if (!params.has('cry_simulate_error')) {
+      return
+    }
 
-    if (params.has('cry_simulate_error')) {
-      timers.push(
-        window.setTimeout(() => {
-          fireDemoError(label)
-        }, 1500),
-      )
-    }
-    if (params.has('cry_simulate_rejection')) {
-      timers.push(
-        window.setTimeout(() => {
-          fireDemoRejection(label)
-        }, 1500),
-      )
-    }
+    const { fire } = getDemoErrorSpec(pathname)
+    const timerId = window.setTimeout(() => {
+      fire()
+    }, 1500)
 
     return () => {
-      timers.forEach((id) => window.clearTimeout(id))
+      window.clearTimeout(timerId)
     }
   }, [pathname, search])
-
-  const label = pageLabel(pathname)
 
   return (
     <div id="cry-demo-error-actions" className="demo-error-actions">
@@ -59,19 +28,11 @@ export function DemoErrorTools() {
         type="button"
         id="cry-demo-error-trigger"
         className="btn-demo-error btn-demo-error-fixed"
-        aria-label="Disparar erro de teste para observabilidade"
-        onClick={() => fireDemoError(label)}
+        data-demo-page={spec.pageKey}
+        aria-label={spec.ariaLabel}
+        onClick={() => spec.fire()}
       >
-        Disparar erro
-      </button>
-      <button
-        type="button"
-        id="cry-demo-rejection-trigger"
-        className="btn-demo-error btn-demo-error-fixed"
-        aria-label="Disparar promise rejeitada (TypeError) de teste para observabilidade"
-        onClick={() => fireDemoRejection(label)}
-      >
-        Disparar promise rejeitada
+        {spec.buttonLabel}
       </button>
     </div>
   )
